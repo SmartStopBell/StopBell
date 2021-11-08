@@ -1,0 +1,2 @@
+rootProject.name = "SmartStopBellProject"
+include ':app'
