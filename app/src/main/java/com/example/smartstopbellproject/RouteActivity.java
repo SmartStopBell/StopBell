@@ -2,6 +2,7 @@ package com.example.smartstopbellproject;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -12,17 +13,30 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class RouteActivity extends AppCompatActivity {
-    String[] stopName = {"정류장이름1", "정류장이름2", "정류장이름3", "정류장이름4", "정류장이름5"};
+
     ListView listview;
+    ListViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route);
 
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, stopName);
+        // Adapter 생성
+        adapter = new ListViewAdapter();
+
+        // 리스트뷰 참조 및 Adapter 달기
         listview = findViewById(R.id.listview);
         listview.setAdapter(adapter);
+
+        // 임시로 데이터 추가해놓음
+        adapter.addItem(ContextCompat.getDrawable(this, R.drawable.route_start), "첫번째 정류장");
+        adapter.addItem(ContextCompat.getDrawable(this, R.drawable.route1), "두번째 정류장");
+        adapter.addItem(ContextCompat.getDrawable(this, R.drawable.route1), "세번째 정류장");
+        adapter.addItem(ContextCompat.getDrawable(this, R.drawable.route_end), "네번째 정류장");
+
+
+
 
         //AlertDialog
         AlertDialog.Builder builder = new AlertDialog.Builder(RouteActivity.this);
@@ -42,10 +56,14 @@ public class RouteActivity extends AppCompatActivity {
             }
         });
 
+        //listview 클릭 이벤트
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectStop = (String)parent.getItemAtPosition(position);
+                ListViewItem item = (ListViewItem) parent.getItemAtPosition(position);
+
+                String selectStop = item.getStopName();
+
                 builder.setTitle(selectStop);
                 AlertDialog alertDialog = builder.create(); //빌더 사용해서 alertDialog 객체 생성
                 alertDialog.show();
