@@ -7,24 +7,20 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+public class bellmain extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+        setContentView(R.layout.activity_bellmain);
         Button rezbtn = findViewById(R.id.rezbtn);
-
         rezbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //카드태그시
-                Intent intent = new Intent(getApplicationContext(), bellmain.class);
+                //노선도 화면으로 전환
+                Intent intent = new Intent(getApplicationContext(), rezcomplicate.class);
                 startActivity(intent);
             }
         });
-
-
     }
 }
