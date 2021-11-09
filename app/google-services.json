@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "557737300420",
+    "firebase_url": "https://smartstopbell-default-rtdb.firebaseio.com",
+    "project_id": "smartstopbell",
+    "storage_bucket": "smartstopbell.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:557737300420:android:3c3508291683761d395491",
+        "android_client_info": {
+          "package_name": "com.example.smartstopbellproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "557737300420-82hd5rte72m9jb94j3safm96et1bue86.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA64mQTH7Irc4IOODEWUuHWYIMzL1TypFM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "557737300420-82hd5rte72m9jb94j3safm96et1bue86.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
