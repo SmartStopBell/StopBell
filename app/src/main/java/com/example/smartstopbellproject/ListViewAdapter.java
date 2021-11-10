@@ -60,6 +60,7 @@ public class ListViewAdapter extends BaseAdapter {
         //아이템 내 각 위젯에 데이터 반영
         iconImageView.setImageResource(listViewItem.getImg());
         StopTextView.setText(listViewItem.getStopName());
+
         //위젯에 대한 이벤트리스너 작성 여기다가가
 
 

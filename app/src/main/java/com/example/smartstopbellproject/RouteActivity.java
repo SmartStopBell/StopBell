@@ -23,14 +23,13 @@ public class RouteActivity extends AppCompatActivity {
     ListView listview;
     ListViewAdapter adapter;
     TextView busNum;
-    Button btnCancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route);
 
-        btnCancel = findViewById(R.id.btnCancel);
+        Button btnCancel = (Button) findViewById(R.id.btnCancel);
 
         // Adapter 생성
         adapter = new ListViewAdapter();
@@ -67,6 +66,18 @@ public class RouteActivity extends AppCompatActivity {
             }
         });
 
+        builder.setPositiveButton("예약", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //예약 버튼 클릭시 동작
+                listview.setSelector(new PaintDrawable(0xE2FFD6C8));
+                Toast.makeText(getApplicationContext(), "예약완료",Toast.LENGTH_LONG).show();
+
+
+                //예약취소 버튼 활성화
+                btnCancel.setVisibility(View.VISIBLE);
+            }
+        });
 
         //listview 클릭 이벤트
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -76,28 +87,21 @@ public class RouteActivity extends AppCompatActivity {
 
                 String selectStop = item.getStopName();
 
-                builder.setPositiveButton("예약", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //예약 버튼 클릭시 동작
-                        Toast.makeText(getApplicationContext(), "예약완료",Toast.LENGTH_LONG).show();
-                        listview.setSelector(new PaintDrawable(0xffffdfd4));
-
-                        //예약취소 버튼 활성화
-                        btnCancel.setVisibility(View.VISIBLE);
-                    }
-                });
                 builder.setTitle(selectStop);
                 AlertDialog alertDialog = builder.create(); //빌더 사용해서 alertDialog 객체 생성
                 alertDialog.show();//alertDialog창 띄우기
             }
         });
+
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //예약취소 버튼 클릭시 동작
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
             }
         });
+
 
         //뒤로가기버튼 동작
         ImageButton back = findViewById(R.id.back);
