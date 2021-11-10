@@ -23,6 +23,7 @@ public class RouteActivity extends AppCompatActivity {
     ListView listview;
     ListViewAdapter adapter;
     TextView busNum;
+    String selectStop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,9 +74,12 @@ public class RouteActivity extends AppCompatActivity {
                 listview.setSelector(new PaintDrawable(0xE2FFD6C8));
                 Toast.makeText(getApplicationContext(), "예약완료",Toast.LENGTH_LONG).show();
 
-
                 //예약취소 버튼 활성화
                 btnCancel.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.putExtra("route",selectStop);
+                startActivity(intent);
             }
         });
 
@@ -85,7 +89,7 @@ public class RouteActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ListViewItem item = (ListViewItem) parent.getItemAtPosition(position);
 
-                String selectStop = item.getStopName();
+                selectStop = item.getStopName();
 
                 builder.setTitle(selectStop);
                 AlertDialog alertDialog = builder.create(); //빌더 사용해서 alertDialog 객체 생성
@@ -109,6 +113,7 @@ public class RouteActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.putExtra("route",selectStop);
                 startActivity(intent);
             }
         });
