@@ -22,6 +22,16 @@ public class MainActivity extends AppCompatActivity {
 //
 //        cardtag.setVisibility(View.GONE);
 
+        //RouteActivity에서 값 가져오기
+        try {
+            Intent intent = getIntent();
+            String route = intent.getExtras().getString("route"); //선택한 목적지 가져옴
+            rezbtn.setText(route);
+        }catch (Exception e){
+            //ignore
+        }
+
+
         //하차벨 클릭 시
         ImageButton bell = findViewById(R.id.bell);
         bell.setOnClickListener(new View.OnClickListener() {

@@ -8,9 +8,11 @@
 
     <Button
         android:id="@+id/rezbtn"
+        android:text="예약"
+        android:textSize="30dp"
         android:layout_width="0dp"
         android:layout_height="80dp"
-        android:background="@color/mint"
+        android:backgroundTint="@color/mint"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
