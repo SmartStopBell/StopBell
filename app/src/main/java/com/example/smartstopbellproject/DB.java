@@ -21,6 +21,7 @@ public class DB extends AppCompatActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
 
+        /*
         //데이터베이스 설정
         DatabaseReference mDatabase;
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -70,7 +71,7 @@ public class DB extends AppCompatActivity {
 
         //출처 : https://firebase.google.com/docs/database/android/read-and-write?hl=ko
 
-
+        */
 
     }
 
