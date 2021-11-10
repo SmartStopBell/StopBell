@@ -20,8 +20,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //카드태그시
-                Intent intent = new Intent(getApplicationContext(), bellmain.class);
-                startActivity(intent);
+
             }
         });
 
