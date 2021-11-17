@@ -1,12 +1,16 @@
 package com.example.smartstopbellproject;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,10 +21,13 @@ public class MainActivity extends AppCompatActivity {
 
         Button rezbtn = findViewById(R.id.rezbtn);
 
-//        //카드 태그 시 태그요청이미지 GONE
-//        ImageView cardtag = findViewById(R.id.cardtag);
-//
-//        cardtag.setVisibility(View.GONE);
+        /*
+        if(카드 태그됨) {
+            CustomDialog.getInstance(this).dismiss();
+        } else {
+            CustomDialog.getInstance(this).showDefaultDialog();
+        }
+        */
 
         //RouteActivity에서 값 가져오기
         try {
