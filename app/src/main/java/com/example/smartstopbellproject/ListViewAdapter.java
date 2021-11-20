@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class ListViewAdapter extends BaseAdapter {
     //Adapter에 추가된 데이터를 저장하기 위한 ArrayList
     private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>();
+    int selectedPosition = -1;
 
     //ListViewAdapter 생성자
     public ListViewAdapter(){
@@ -58,24 +59,39 @@ public class ListViewAdapter extends BaseAdapter {
         ListViewItem listViewItem = listViewItemList.get(position);
 
         //아이템 내 각 위젯에 데이터 반영
-        iconImageView.setImageResource(listViewItem.getImg());
-        StopTextView.setText(listViewItem.getStopName());
+        if (position == 0) {
+            iconImageView.setImageResource(R.drawable.route_start);
+        } else if (position == listViewItemList.size() -1) {
+            iconImageView.setImageResource(R.drawable.route_end);
+        } else {
+            iconImageView.setImageResource(R.drawable.route1);
+        }
+        StopTextView.setText(listViewItem.getStopname());
 
         //위젯에 대한 이벤트리스너 작성 여기다가가
 
 
+        // 선택된 포지션과 현재 그리려는 포지션이 동일하다면 백그라운드느 핑크
+        if (selectedPosition == position) {
+            convertView.setBackgroundResource(R.color.pink);
+        }
 
         return convertView;
     }
 
     //아이템 데이터 추가를 위한 함수. 원하는 대로 작성
-    public void addItem(int img, String name){
-        ListViewItem item = new ListViewItem();
+    public void addItem(String stopId, String stopname, int position){
+        ListViewItem item = new ListViewItem(stopId, stopname, position);
 
-        item.setImg(img);
-        item.setStopName(name);
+        item.setStopId(stopId);
+        item.setStopname(stopname);
+        item.setPosition(position);
 
         listViewItemList.add(item);
     }
 
+    public void setSelectedItem(int position) {
+        selectedPosition = position;
+        this.notifyDataSetChanged();
+    }
 }
