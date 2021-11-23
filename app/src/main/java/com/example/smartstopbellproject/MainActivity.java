@@ -1,16 +1,12 @@
 package com.example.smartstopbellproject;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,23 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button rezbtn = findViewById(R.id.rezbtn);
 
-        /*
-        if(카드 태그됨) {
-            CustomDialog.getInstance(this).dismiss();
-        } else {
-            CustomDialog.getInstance(this).showDefaultDialog();
-        }
-        */
-
-        //RouteActivity에서 값 가져오기
-        try {
-            Intent intent = getIntent();
-            String route = intent.getExtras().getString("route"); //선택한 목적지 가져옴
-            rezbtn.setText(route);
-        }catch (Exception e){
-            //ignore
-        }
-
+        CustomDialog.getInstance(MainActivity.this).showDefaultDialog();
 
         //하차벨 클릭 시
         ImageButton bell = findViewById(R.id.bell);
