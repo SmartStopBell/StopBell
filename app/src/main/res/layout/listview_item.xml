@@ -8,7 +8,7 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="10dp"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="75dp"
         android:orientation="horizontal">
 
         <ImageView
@@ -27,6 +27,7 @@
             <TextView
                 android:id="@+id/tvStop"
                 android:text="정류장 이름"
+                android:textSize="18dp"
                 android:gravity="center_vertical"
                 android:layout_weight="1"
                 android:layout_width="match_parent"

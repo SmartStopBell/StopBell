@@ -1,5 +1,6 @@
 package com.example.smartstopbellproject;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -30,16 +31,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
+        
         rezbtn = findViewById(R.id.rezbtn);
         getonBus = findViewById(R.id.getonBus);
 
 
+        //카드 태그 창 띄우기
         CustomDialog.getInstance(this).showDefaultDialog();
 
 
-        //승차 버스번호 출력
+        //rfid로 받은 버스 정보를 가지고 승차한 버스번호 출력
         databaseReference.child("bus").child("_bus").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -54,30 +55,27 @@ public class MainActivity extends AppCompatActivity {
         });
 
         DatabaseReference reserve = firebaseDatabase.getReference("reserve");
-
-            databaseReference.child("reserve").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.child("stopname").getValue(String.class)!=null){
-                        String goalStop = snapshot.child("stopname").getValue(String.class);
-                        rezbtn.setText(goalStop);
-
-                    }else {
-                        rezbtn.setText("예약");
-                    }
+        
+        //하차 예약시 예약 버튼에 목적지 이름 출력
+        databaseReference.child("reserve").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.child("stopname").getValue(String.class)!=null){
+                    String goalStop = snapshot.child("stopname").getValue(String.class);
+                    rezbtn.setText(goalStop);
+                }else {
+                    //하차 예약을 안 했을 시 예약 버튼 그대로
+                    rezbtn.setText("예약");
                 }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                }
-            });
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
 
+            
 
-
-
-
-        CustomDialog.getInstance(MainActivity.this).showDefaultDialog();
-
-        //하차벨 클릭 시
+        //하차벨 클릭 시(즉시하차)
         ImageButton bell = findViewById(R.id.bell);
         bell.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,13 +84,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //예약 버트 클릭 시 노선도 화면으로 전환
         rezbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //예약버튼 클릭 시 노선도 화면으로 전환
                 Intent intent = new Intent(getApplicationContext(), RouteActivity.class);
                 startActivity(intent);
-
             }
         });
 

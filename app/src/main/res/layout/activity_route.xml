@@ -20,8 +20,8 @@
         <ImageButton
             android:id="@+id/back"
             android:background="@drawable/back"
-            android:layout_width="15dp"
-            android:layout_height="28dp"
+            android:layout_width="18dp"
+            android:layout_height="30dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -30,7 +30,7 @@
         <TextView
             android:id="@+id/busNum"
             android:text="승차 버스번호"
-            android:textSize="20dp"
+            android:textSize="21dp"
             android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
