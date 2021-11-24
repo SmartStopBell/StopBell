@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         getonBus = findViewById(R.id.getonBus);
 
 
-        //CustomDialog.getInstance(this).showDefaultDialog();
+        CustomDialog.getInstance(this).showDefaultDialog();
 
 
         //승차 버스번호 출력
