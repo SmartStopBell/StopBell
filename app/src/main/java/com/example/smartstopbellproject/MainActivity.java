@@ -1,5 +1,6 @@
 package com.example.smartstopbellproject;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -35,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
         rezbtn = findViewById(R.id.rezbtn);
         getonBus = findViewById(R.id.getonBus);
 
-
-        //CustomDialog.getInstance(this).showDefaultDialog();
+        //카드 태그창 출력
+        CustomDialog.getInstance(this).showDefaultDialog();
 
 
         //승차 버스번호 출력
@@ -71,11 +72,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-
-
-
-
-        CustomDialog.getInstance(MainActivity.this).showDefaultDialog();
 
         //하차벨 클릭 시
         ImageButton bell = findViewById(R.id.bell);
