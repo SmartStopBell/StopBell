@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.drawable.PaintDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,15 +28,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.Nullable;
 
+import java.util.HashMap;
+
 public class RouteActivity extends AppCompatActivity {
 
     ListView listview;
     ListViewAdapter adapter;
     TextView busNum;
-    String selectStop;
+    ListViewItem selectedItem;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
-    ChildEventListener ChildEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,15 +55,35 @@ public class RouteActivity extends AppCompatActivity {
         listview.setAdapter(adapter);
 
         DatabaseReference route = firebaseDatabase.getReference("busroute");
-        route.child("2222").addValueEventListener(new ValueEventListener() {
+        DatabaseReference busNumber = firebaseDatabase.getReference("bus");
+
+
+        //버스 번호 출력
+        busNumber.child("_bus").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    String str = snapshot.child("stopname").getValue(String.class);
-                    adapter.addItem(R.drawable.route1, str);
-                    busNum.setText(str);
+                    String busnum = snapshot.getKey();
+                    busNum.setText(busnum);
+
+                    route.child(busnum).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        String stopId = snapshot.getKey();
+                        String stopname = snapshot.child("stopname").getValue(String.class);
+                        Integer position = snapshot.child("position").getValue(Integer.class);
+                        adapter.addItem(stopId, stopname, position);
+                    }
+                    adapter.notifyDataSetChanged();
                 }
-                adapter.notifyDataSetChanged();
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+                }
             }
 
             @Override
@@ -70,11 +92,6 @@ public class RouteActivity extends AppCompatActivity {
             }
         });
 
-        // 임시로 데이터 추가해놓음
-//        adapter.addItem(R.drawable.route_start, "첫번째 정류장");
-//        adapter.addItem(R.drawable.route1, "두번째 정류장");
-//        adapter.addItem(R.drawable.route1, "세번째 정류장");
-//        adapter.addItem(R.drawable.route_end, "네번째 정류장");
 
         /* 정민이꺼
         busNum = findViewById(R.id.busNum);
@@ -102,15 +119,14 @@ public class RouteActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //예약 버튼 클릭시 동작
-                listview.setSelector(R.color.pink);
+                adapter.setSelectedItem(selectedItem.getPosition());
                 Toast.makeText(getApplicationContext(), "예약완료",Toast.LENGTH_LONG).show();
 
                 //db에 예약 정보 추가
-                databaseReference.child("reserve").setValue(selectStop);
+                databaseReference.child("reserve").setValue(selectedItem);
 
                 //예약취소 버튼 활성화
                 btnCancel.setVisibility(View.VISIBLE);
-
             }
         });
 
@@ -118,11 +134,13 @@ public class RouteActivity extends AppCompatActivity {
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (btnCancel.getVisibility() == View.VISIBLE) return;
+
                 ListViewItem item = (ListViewItem) parent.getItemAtPosition(position);
 
-                selectStop = item.getStopName();
+                selectedItem = item;
 
-                builder.setTitle(selectStop);
+                builder.setTitle(selectedItem.getStopname());
                 AlertDialog alertDialog = builder.create(); //빌더 사용해서 alertDialog 객체 생성
                 alertDialog.show();//alertDialog창 띄우기
             }
@@ -150,18 +168,16 @@ public class RouteActivity extends AppCompatActivity {
             }
         });
 
-        //예약취소 하지 않은 경우
-//        DatabaseReference reserve = firebaseDatabase.getReference("reserve");
-//        if(reserve!= null){
-//            listview.setSelector(R.color.pink);
-//            btnCancel.setVisibility(View.VISIBLE);
-//        }
+        //뒤로가기 눌렀다와도 안 사라지게 하고싶다..
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 for(DataSnapshot data : snapshot.getChildren()){
-                    if (data.child("reserve").exists()){
-                        listview.setSelector(R.color.pink);
+                    if (data.getKey().equals("reserve")){
+                        HashMap hashMap = (HashMap) data.getValue();
+                        Integer position = ((Long) hashMap.get("position")).intValue();
+
+                        adapter.setSelectedItem(position);
                         btnCancel.setVisibility(View.VISIBLE);
                     }
                 }

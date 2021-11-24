@@ -29,7 +29,7 @@
             app:layout_constraintHorizontal_bias="0.04"/>
         <TextView
             android:id="@+id/busNum"
-            android:text="버스 번호"
+            android:text="승차 버스번호"
             android:textSize="20dp"
             android:textColor="@color/white"
             android:layout_width="wrap_content"
