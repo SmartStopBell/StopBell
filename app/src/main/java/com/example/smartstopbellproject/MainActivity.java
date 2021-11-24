@@ -1,6 +1,5 @@
 package com.example.smartstopbellproject;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -76,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+        CustomDialog.getInstance(MainActivity.this).showDefaultDialog();
 
         //하차벨 클릭 시
         ImageButton bell = findViewById(R.id.bell);
