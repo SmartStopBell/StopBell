@@ -5,6 +5,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import android.bluetooth.le.AdvertiseCallback;
+import android.bluetooth.le.AdvertiseSettings;
+import android.bluetooth.le.AdvertisingSetCallback;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.PaintDrawable;
@@ -28,6 +31,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.Nullable;
 
+import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.BeaconTransmitter;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class RouteActivity extends AppCompatActivity {
@@ -58,12 +67,13 @@ public class RouteActivity extends AppCompatActivity {
         DatabaseReference busNumber = firebaseDatabase.getReference("bus");
 
 
-        //버스 번호 출력
-        busNumber.child("_bus").addValueEventListener(new ValueEventListener() {
+
+
+        databaseReference.child("bus").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    String busnum = snapshot.getKey();
+                    String busnum = snapshot.getValue(String.class);
                     busNum.setText(busnum);
 
                     route.child(busnum).addValueEventListener(new ValueEventListener() {
@@ -127,6 +137,37 @@ public class RouteActivity extends AppCompatActivity {
 
                 //예약취소 버튼 활성화
                 btnCancel.setVisibility(View.VISIBLE);
+
+                Integer a = adapter.selectedPosition;
+                busNum.setText(a.toString());
+
+
+                // 비콘 생성 후 시작. 실제 가장 필요한 소스
+                Beacon beacon = new Beacon.Builder()
+                        .setId1("2f234454-cf6d-4a0f-adf2-f4911ba9ffa6")  // uuid for beacon
+                        .setId2(a.toString())  // major
+                        .setId3("55555")  // minor
+                        .setManufacturer(0x004C)  // Radius Networks. 0x0118 : Change this for other beacon layouts // 0x004C : for iPhone
+                        .setTxPower(-65)  // Power in dB
+                        .build();
+                BeaconParser beaconParser = new BeaconParser()
+                        .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
+                BeaconTransmitter beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
+                beaconTransmitter.startAdvertising(beacon, new AdvertiseCallback() {
+                    @Override
+                    public void onStartSuccess(AdvertiseSettings settingsInEffect) {
+                        super.onStartSuccess(settingsInEffect);
+                    }
+
+                    @Override
+                    public void onStartFailure(int errorCode) {
+                        super.onStartFailure(errorCode);
+                    }
+                });
+
+                beaconTransmitter.stopAdvertising();
+
+
             }
         });
 
@@ -156,6 +197,41 @@ public class RouteActivity extends AppCompatActivity {
 
                 //db에서 삭제
                 databaseReference.child("reserve").removeValue();
+
+                Integer a = adapter.selectedPosition;
+                busNum.setText(a.toString());
+
+
+                // 비콘 생성 후 시작. 실제 가장 필요한 소스
+                Beacon beacon = new Beacon.Builder()
+                        .setId1("2f234454-cf6d-4a0f-adf2-f4911ba9ffa6")  // uuid for beacon
+                        .setId2("55555")  // major
+                        .setId3(a.toString())  // minor
+                        .setManufacturer(0x004C)  // Radius Networks. 0x0118 : Change this for other beacon layouts // 0x004C : for iPhone
+                        .setTxPower(-65)  // Power in dB
+                        .build();
+                BeaconParser beaconParser = new BeaconParser()
+                        .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
+                BeaconTransmitter beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
+                beaconTransmitter.startAdvertising(beacon, new AdvertiseCallback() {
+                    @Override
+                    public void onStartSuccess(AdvertiseSettings settingsInEffect) {
+                        super.onStartSuccess(settingsInEffect);
+                    }
+
+                    @Override
+                    public void onStartFailure(int errorCode) {
+                        super.onStartFailure(errorCode);
+                    }
+                });
+
+                beaconTransmitter.stopAdvertising();
+
+
+
+
+
+
             }
         });
 

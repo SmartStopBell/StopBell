@@ -28,15 +28,16 @@ public class CustomDialog extends Dialog {
         customDialog.setContentView(R.layout.custom_dialog);
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference =firebaseDatabase.getReference("bus");
+        DatabaseReference databaseReference =firebaseDatabase.getReference();
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.child("_bus").hasChildren()) { //문제 x
+                if(!dataSnapshot.child("bus").exists()) { //문제 x
                     customDialog.show();
                     customDialog.setCancelable(false);
                 }
-                else if(dataSnapshot.child("_bus").hasChildren())
+                else if(dataSnapshot.child("bus").exists())
+                    //카드 태그 됐을 때
                     customDialog.dismiss();
             }
 
