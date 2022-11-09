@@ -1,17 +1,22 @@
 package com.example.smartstopbellproject;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
 
 import android.bluetooth.le.AdvertiseCallback;
+import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.AdvertisingSetCallback;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.PaintDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -47,14 +52,18 @@ public class RouteActivity extends AppCompatActivity {
     ListViewItem selectedItem;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
+    String userName = "user1";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route);
 
-        Button btnCancel = (Button) findViewById(R.id.btnCancel);
+        Button btnCancel = findViewById(R.id.btnCancel);
         busNum = findViewById(R.id.busNum);
+        ImageButton back = findViewById(R.id.back);
 
         // Adapter 생성
         adapter = new ListViewAdapter();
@@ -63,42 +72,60 @@ public class RouteActivity extends AppCompatActivity {
         listview = findViewById(R.id.listview);
         listview.setAdapter(adapter);
 
+        //예약 시 실행되는 비콘
+        Beacon beacon1 = new Beacon.Builder()
+                .setId1("2f234454-cf6d-4a0f-adf2-f4911ba9ffa6")  // uuid for beacon
+                .setId2("1")  // major
+                .setId3("1")  // minor
+                .setManufacturer(0x004C)  // Radius Networks. 0x0118 : Change this for other beacon layouts // 0x004C : for iPhone
+                .setTxPower(-65)  // Power in dB
+                .build();
+        BeaconParser beaconParser = new BeaconParser()
+                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
+        BeaconTransmitter beaconTransmitter1 = new BeaconTransmitter(getApplicationContext(), beaconParser);
+
+        //예약 취소 시 실행되는 비콘
+        Beacon beacon2 = new Beacon.Builder()
+                .setId1("2f234454-cf6d-4a0f-adf2-f4911ba9ffa6")  // uuid for beacon
+                .setId2("2")  // major
+                .setId3("1")  // minor
+                .setManufacturer(0x004C)  // Radius Networks. 0x0118 : Change this for other beacon layouts // 0x004C : for iPhone
+                .setTxPower(-65)  // Power in dB
+                .build();
+        BeaconParser beaconParser2 = new BeaconParser()
+                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
+        BeaconTransmitter beaconTransmitter2 = new BeaconTransmitter(getApplicationContext(), beaconParser2);
+
+
+        //버스 번호 & 노선 출력
         DatabaseReference route = firebaseDatabase.getReference("busroute");
-        DatabaseReference busNumber = firebaseDatabase.getReference("bus");
-
-
-
-
         databaseReference.child("bus").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String busnum = snapshot.getValue(String.class);
                     busNum.setText(busnum);
 
                     route.child(busnum).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                        String stopId = snapshot.getKey();
-                        String stopname = snapshot.child("stopname").getValue(String.class);
-                        Integer position = snapshot.child("position").getValue(Integer.class);
-                        adapter.addItem(stopId, stopname, position);
-                    }
-                    adapter.notifyDataSetChanged();
-                }
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                String stopId = snapshot.getKey();
+                                String stopname = snapshot.child("stopname").getValue(String.class);
+                                Integer position = snapshot.child("position").getValue(Integer.class);
+                                adapter.addItem(stopId, stopname, position);
+                            }
+                            adapter.notifyDataSetChanged();
+                        }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                        }
+                    });
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
 
@@ -113,7 +140,6 @@ public class RouteActivity extends AppCompatActivity {
          */
 
 
-
         //AlertDialog
         AlertDialog.Builder builder = new AlertDialog.Builder(RouteActivity.this);
         builder.setTitle("정류장 이름");
@@ -125,118 +151,116 @@ public class RouteActivity extends AppCompatActivity {
             }
         });
 
+        //예약 버튼 클릭 시 동작
         builder.setPositiveButton("예약", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //예약 버튼 클릭시 동작
+
                 adapter.setSelectedItem(selectedItem.getPosition());
                 Toast.makeText(getApplicationContext(), "예약완료",Toast.LENGTH_LONG).show();
 
-                //db에 예약 정보 추가
-                databaseReference.child("reserve").setValue(selectedItem);
-
-                //예약취소 버튼 활성화
+                // db에 예약 정보 추가
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                        if (!snapshot.child("reserve").exists()) {
+                            userName = "user1";
+                            databaseReference.child("reserve").child(userName).setValue(selectedItem);
+                        } else if (snapshot.child("reserve").exists()) {
+                            userName = "user1";
+                            databaseReference.child("reserve").child(userName).setValue(selectedItem);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                    }
+                });
+                // 예약취소 버튼 활성화
                 btnCancel.setVisibility(View.VISIBLE);
-
                 Integer a = adapter.selectedPosition;
-                busNum.setText(a.toString());
 
 
-                // 비콘 생성 후 시작. 실제 가장 필요한 소스
-                Beacon beacon = new Beacon.Builder()
+                // 예약 비콘 major, minor값 설정
+                Beacon beacon1 = new Beacon.Builder()
                         .setId1("2f234454-cf6d-4a0f-adf2-f4911ba9ffa6")  // uuid for beacon
-                        .setId2(a.toString())  // major
-                        .setId3("55555")  // minor
+                        .setId2("55555")  // major
+                        .setId3(a.toString())  // minor -> position값
                         .setManufacturer(0x004C)  // Radius Networks. 0x0118 : Change this for other beacon layouts // 0x004C : for iPhone
                         .setTxPower(-65)  // Power in dB
                         .build();
-                BeaconParser beaconParser = new BeaconParser()
-                        .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
-                BeaconTransmitter beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
-                beaconTransmitter.startAdvertising(beacon, new AdvertiseCallback() {
+
+                // 예약 비콘 startAvertising
+                beaconTransmitter1.startAdvertising(beacon1, new AdvertiseCallback() {
                     @Override
                     public void onStartSuccess(AdvertiseSettings settingsInEffect) {
                         super.onStartSuccess(settingsInEffect);
+                        // 예약취소 비콘은 stopAdvertising
+                        beaconTransmitter2.stopAdvertising();
                     }
-
                     @Override
                     public void onStartFailure(int errorCode) {
                         super.onStartFailure(errorCode);
                     }
                 });
-
-                beaconTransmitter.stopAdvertising();
-
-
             }
         });
 
-        //listview 클릭 이벤트
+        //listview item 클릭 이벤트
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (btnCancel.getVisibility() == View.VISIBLE) return;
 
                 ListViewItem item = (ListViewItem) parent.getItemAtPosition(position);
-
                 selectedItem = item;
-
                 builder.setTitle(selectedItem.getStopname());
                 AlertDialog alertDialog = builder.create(); //빌더 사용해서 alertDialog 객체 생성
-                alertDialog.show();//alertDialog창 띄우기
+                alertDialog.show(); //alertDialog창 띄우기
             }
         });
+
 
         //예약취소 버튼 클릭 이벤트
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "예약취소",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "예약취소", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
 
-                //db에서 삭제
-                databaseReference.child("reserve").removeValue();
+                // DB에서 예약 정보 삭제
+                databaseReference.child("reserve").child(userName).removeValue();
 
                 Integer a = adapter.selectedPosition;
-                busNum.setText(a.toString());
+                Integer b = a+1000;
 
-
-                // 비콘 생성 후 시작. 실제 가장 필요한 소스
-                Beacon beacon = new Beacon.Builder()
+                // 예약취소 비콘 major, minor값 설정
+                Beacon beacon2 = new Beacon.Builder()
                         .setId1("2f234454-cf6d-4a0f-adf2-f4911ba9ffa6")  // uuid for beacon
                         .setId2("55555")  // major
-                        .setId3(a.toString())  // minor
+                        .setId3(b.toString())  // minor -> position값 + 1000
                         .setManufacturer(0x004C)  // Radius Networks. 0x0118 : Change this for other beacon layouts // 0x004C : for iPhone
                         .setTxPower(-65)  // Power in dB
                         .build();
-                BeaconParser beaconParser = new BeaconParser()
-                        .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
-                BeaconTransmitter beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
-                beaconTransmitter.startAdvertising(beacon, new AdvertiseCallback() {
+
+                // 예약취소 비콘 startAvertising
+                beaconTransmitter2.startAdvertising(beacon2, new AdvertiseCallback() {
                     @Override
                     public void onStartSuccess(AdvertiseSettings settingsInEffect) {
                         super.onStartSuccess(settingsInEffect);
+                        // 예약 비콘은 stopAdvertisiong
+                        beaconTransmitter1.stopAdvertising();
                     }
-
                     @Override
                     public void onStartFailure(int errorCode) {
                         super.onStartFailure(errorCode);
                     }
                 });
-
-                beaconTransmitter.stopAdvertising();
-
-
-
-
-
-
             }
         });
 
-        //뒤로가기버튼 동작
-        ImageButton back = findViewById(R.id.back);
+
+        // 뒤로가기 버튼 클릭 시 main
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -244,26 +268,23 @@ public class RouteActivity extends AppCompatActivity {
             }
         });
 
-        //뒤로가기 눌렀다와도 안 사라지게 하고싶다..
+        // 예약 정보 화면에 띄우기
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                for(DataSnapshot data : snapshot.getChildren()){
-                    if (data.getKey().equals("reserve")){
-                        HashMap hashMap = (HashMap) data.getValue();
-                        Integer position = ((Long) hashMap.get("position")).intValue();
+                for (DataSnapshot data : snapshot.getChildren()) {
 
-                        adapter.setSelectedItem(position);
+                    // 예약한 userName이 존재하면 값 가져옴
+                    if (snapshot.child("reserve").child(userName).exists()) {
+                        Long str = (Long) snapshot.child("reserve").child(userName).child("position").getValue();
+                        adapter.setSelectedItem(Integer.parseInt(str.toString()));
                         btnCancel.setVisibility(View.VISIBLE);
                     }
                 }
             }
-
             @Override
             public void onCancelled(DatabaseError error) {
-
             }
         });
-
-    }
+    } //onCreate end
 }

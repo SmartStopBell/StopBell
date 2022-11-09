@@ -1,5 +1,6 @@
 package com.example.smartstopbellproject;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ public class ListViewAdapter extends BaseAdapter {
     //Adapter에 추가된 데이터를 저장하기 위한 ArrayList
     private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>();
     int selectedPosition = -1;
+    private ListViewItem userN;
 
     //ListViewAdapter 생성자
     public ListViewAdapter(){
@@ -41,6 +43,7 @@ public class ListViewAdapter extends BaseAdapter {
     }
 
     //position에 위치한 데이터를 화면에 출력하는 데 사용할 View 리턴
+    @SuppressLint("ResourceAsColor")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Context context = parent.getContext();
@@ -74,6 +77,11 @@ public class ListViewAdapter extends BaseAdapter {
         // 선택된 포지션과 현재 그리려는 포지션이 동일하다면 백그라운드느 핑크
         if (selectedPosition == position) {
             convertView.setBackgroundResource(R.color.pink);
+            notifyDataSetChanged();
+
+        }else {
+            convertView.setBackgroundResource(R.color.white);
+            notifyDataSetChanged();
         }
 
         return convertView;
@@ -94,4 +102,5 @@ public class ListViewAdapter extends BaseAdapter {
         selectedPosition = position;
         this.notifyDataSetChanged();
     }
+
 }

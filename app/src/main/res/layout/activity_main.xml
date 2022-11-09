@@ -18,27 +18,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
-    <!--    <ImageView-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:id="@+id/cardtag"-->
-    <!--        android:src="@drawable/main_cardtag"/>-->
 
     <ImageButton
         android:id="@+id/bell"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-        android:maxWidth="300dp"
-        android:maxHeight="300dp"
+        android:maxWidth="390dp"
+        android:maxHeight="390dp"
         android:scaleType="fitCenter"
         android:background="@android:color/transparent"
         android:src="@drawable/bell_before"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/rezbtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+         />
 
     <TextView
         android:id="@+id/getonBus"
@@ -46,9 +41,9 @@
         android:layout_height="wrap_content"
         android:text="승차버스번호"
         android:textSize="40dp"
-        app:layout_constraintVertical_bias="0.1"
+        app:layout_constraintVertical_bias="0.8"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bell"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 

@@ -14,6 +14,7 @@ public class ListViewItem {
     }
 
 
+
     public String getStopname() {
         return stopname;
     }
@@ -33,4 +34,5 @@ public class ListViewItem {
     public String getStopId() { return stopId; }
 
     public void setStopId(String stopId) { this.stopId = stopId; }
+
 }
